@@ -2,12 +2,12 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='rmtest',
+    name='vkmtest',
     version='1.0.0',
-    description='Redis Module Testing Utility',
-    url='http://github.com/goodform/rmtest',
+    description='Valkey Module Testing Utility',
+    url='http://github.com/valkey-io/vkmtest',
     packages=find_packages(),
-    install_requires=['redis'],
+    install_requires=['valkey'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

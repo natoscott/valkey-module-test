@@ -4,11 +4,11 @@ import os
 import time
 import uuid
 import logging as log
-from . import DisposableRedis
+from . import DisposableValkey
 
 class Cluster(object):
 
-    def __init__(self, num_nodes=3, path='redis-server', **extra_args):
+    def __init__(self, num_nodes=3, path='valkey-server', **extra_args):
 
         self.common_conf = {
             'cluster-enabled': 'yes',
@@ -19,7 +19,7 @@ class Cluster(object):
         self.nodes = []
         self.ports = []
         self.confs = []
-        self.redis_path = path
+        self.valkey_path = path
         self.extra_args = extra_args
 
     def _node_by_slot(self, slot):
@@ -44,7 +44,7 @@ class Cluster(object):
 
         slots_per_node = int(16384 / len(self.ports)) + 1
         for i, node in enumerate(self.nodes):
-            assert isinstance(node, DisposableRedis)
+            assert isinstance(node, DisposableValkey)
             conn = node.client()
             for port in self.ports:
                 conn.cluster('MEET', '127.0.0.1', port)
@@ -89,7 +89,7 @@ class Cluster(object):
             self.confs.append(nodeconf)
 
 
-            node = DisposableRedis(path=self.redis_path, **conf)
+            node = DisposableValkey(path=self.valkey_path, **conf)
             node.force_start()
             node.start()
 
@@ -121,7 +121,7 @@ class Cluster(object):
     def stop(self):
 
         for i, node in enumerate(self.nodes):
-            assert isinstance(node, DisposableRedis)
+            assert isinstance(node, DisposableValkey)
             try:
                 node.stop()
             except Exception as err:

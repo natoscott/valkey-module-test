@@ -1,14 +1,14 @@
 # pylint: disable=missing-docstring, invalid-name, too-few-public-methods
 
 """
-Configuration file for determining port, path, etc. of Redis. This is used
+Configuration file for determining port, path, etc. of Valkey. This is used
 by all loaded tests.
 
-This file exports three variables, REDIS_BINARY which contains the executable
-path for Redis; REDIS_MODULE which contains the path to the module to test,
-and REDIS_PORT which connects to an already-existent redis server.
+This file exports three variables, VALKEY_BINARY which contains the executable
+path for Valkey; VALKEY_MODULE which contains the path to the module to test,
+and VALKEY_PORT which connects to an already-existent valkey server.
 
-The `REDIS_PATH`, `REDIS_MODULE_PATH`, and `REDIS_PORT` environment variables
+The `VALKEY_PATH`, `VALKEY_MODULE_PATH`, and `VALKEY_PORT` environment variables
 can all be used to override these settings.
 """
 
@@ -28,12 +28,12 @@ class ConfigVar(object):
 
 
 cfg = ConfigParser()
-cfg.read(['rmtest.config'])
+cfg.read(['vmktest.config'])
 
 entries = {
-    'path': ConfigVar('REDIS_PATH', 'executable', 'redis-server'),
-    'module': ConfigVar('REDIS_MODULE_PATH', 'module'),
-    'port': ConfigVar('REDIS_PORT', 'existing_port')
+    'path': ConfigVar('VALKEY_PATH', 'executable', 'valkey-server'),
+    'module': ConfigVar('VALKEY_MODULE_PATH', 'module'),
+    'port': ConfigVar('VALKEY_PORT', 'existing_port')
 }
 
 for _, ent in entries.items():
@@ -47,8 +47,8 @@ for _, ent in entries.items():
         ent.value = os.environ[ent.env]
 
 
-REDIS_BINARY = entries['path'].value
-REDIS_MODULE = entries['module'].value
-REDIS_PORT = entries['port'].value
-if REDIS_PORT:
-    REDIS_PORT = int(REDIS_PORT)
+VALKEY_BINARY = entries['path'].value
+VALKEY_MODULE = entries['module'].value
+VALKEY_PORT = entries['port'].value
+if VALKEY_PORT:
+    VALKEY_PORT = int(VALKEY_PORT)

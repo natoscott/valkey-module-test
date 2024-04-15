@@ -1,5 +1,5 @@
 *
-!/rmtest/**/
-!/rmtest
+!/vkmtest/**/
+!/vkmtest
 !**/*.py
 !.gitignore

@@ -1,23 +1,23 @@
-#include "redismodule.h"
-int TestCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
+#include "valkeymodule.h"
+int TestCommand(ValkeyModuleCtx *ctx, ValkeyModuleString **argv, int argc) {
 
-  return RedisModule_ReplyWithSimpleString(ctx, "OK");
+  return ValkeyModule_ReplyWithSimpleString(ctx, "OK");
 }
 
-int ErrCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
-  return RedisModule_ReplyWithError(ctx, "ERR");
+int ErrCommand(ValkeyModuleCtx *ctx, ValkeyModuleString **argv, int argc) {
+  return ValkeyModule_ReplyWithError(ctx, "ERR");
 }
 
 /* Registering the module */
-int RedisModule_OnLoad(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) {
-  if (RedisModule_Init(ctx, "test", 1, REDISMODULE_APIVER_1) == REDISMODULE_ERR) {
-    return REDISMODULE_ERR;
+int ValkeyModule_OnLoad(ValkeyModuleCtx *ctx, ValkeyModuleString **argv, int argc) {
+  if (ValkeyModule_Init(ctx, "test", 1, VALKEYMODULE_APIVER_1) == VALKEYMODULE_ERR) {
+    return VALKEYMODULE_ERR;
   }
-  if (RedisModule_CreateCommand(ctx, "test.test", TestCommand, "readonly", 0,0,0) == REDISMODULE_ERR) {
-    return REDISMODULE_ERR;
+  if (ValkeyModule_CreateCommand(ctx, "test.test", TestCommand, "readonly", 0,0,0) == VALKEYMODULE_ERR) {
+    return VALKEYMODULE_ERR;
   }
-  if (RedisModule_CreateCommand(ctx, "test.error", ErrCommand, "readonly", 0,0,0) == REDISMODULE_ERR) {
-    return REDISMODULE_ERR;
+  if (ValkeyModule_CreateCommand(ctx, "test.error", ErrCommand, "readonly", 0,0,0) == VALKEYMODULE_ERR) {
+    return VALKEYMODULE_ERR;
   }
-  return REDISMODULE_OK;
+  return VALKEYMODULE_OK;
 }

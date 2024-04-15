@@ -1,9 +1,9 @@
 from subprocess import Popen
 import unittest
 import os.path
-from rmtest import ModuleTestCase
-from rmtest.cluster import ClusterModuleTestCase
-from rmtest.disposableredis import cluster
+from vkmtest import ModuleTestCase
+from vkmtest.cluster import ClusterModuleTestCase
+from vkmtest.disposablevalkey import cluster
 
 
 MODULE_PATH = os.path.abspath(os.path.dirname(__file__)) + '/' + 'module.so'
@@ -27,8 +27,8 @@ class TestTestCase(ModuleTestCase(MODULE_PATH, module_args=('foo','bar'))):
             build_module()
 
     def testContext(self):
-        with self.redis() as r:
-            with self.redis() as r:
+        with self.valkey() as r:
+            with self.valkey() as r:
                 for _ in r.retry_with_rdb_reload():
                     self.assertOk(r.execute_command('TEST.TEST'))
                     with self.assertResponseError():

@@ -10,9 +10,9 @@ import warnings
 import random
 import redis
 
-REDIS_DEBUGGER = os.environ.get('REDIS_DEBUGGER', None)
-REDIS_SHOW_OUTPUT = int(os.environ.get(
-    'REDIS_VERBOSE', 1 if REDIS_DEBUGGER else 0))
+VALKEY_DEBUGGER = os.environ.get('VALKEY_DEBUGGER', None)
+VALKEY_SHOW_OUTPUT = int(os.environ.get(
+    'VALKEY_VERBOSE', 1 if VALKEY_DEBUGGER else 0))
 
 
 def get_random_port():
@@ -31,9 +31,9 @@ def get_random_port():
 
 class Client(redis.StrictRedis):
 
-    def __init__(self, disposable_redis, port):
+    def __init__(self, disposable_valkey, port):
         redis.StrictRedis.__init__(self, port=port, decode_responses=True)
-        self.dr = disposable_redis
+        self.dr = disposable_valkey
 
     def retry_with_rdb_reload(self):
         yield 1
@@ -41,19 +41,19 @@ class Client(redis.StrictRedis):
         yield 2
 
 
-class DisposableRedis(object):
+class DisposableValkey(object):
 
-    def __init__(self, port=None, path='redis-server', **extra_args):
+    def __init__(self, port=None, path='valkey-server', **extra_args):
         """
-        :param port: port number to start the redis server on.
+        :param port: port number to start the valkey server on.
             Specify none to automatically generate
         :type port: int|None
         :param extra_args: any extra arguments kwargs will
-            be passed to redis server as --key val
+            be passed to valkey server as --key val
         """
         self._port = port
 
-        # this will hold the actual port the redis is listening on.
+        # this will hold the actual port the valkey is listening on.
         # It's equal to `_port` unless `_port` is None
         # in that case `port` is randomly generated
         self.port = None
@@ -81,19 +81,19 @@ class DisposableRedis(object):
     def _get_output(self):
         if not self.process:
             return ''
-        return '' if REDIS_SHOW_OUTPUT else self.process.stdout.read()
+        return '' if VALKEY_SHOW_OUTPUT else self.process.stdout.read()
 
     def _start_process(self):
         if self._is_external:
             return
 
-        if REDIS_DEBUGGER:
-            debugger = REDIS_DEBUGGER.split()
+        if VALKEY_DEBUGGER:
+            debugger = VALKEY_DEBUGGER.split()
             args = debugger + self.args
         else:
             args = self.args
-        stdout = None if REDIS_SHOW_OUTPUT else subprocess.PIPE
-        if REDIS_SHOW_OUTPUT:
+        stdout = None if VALKEY_SHOW_OUTPUT else subprocess.PIPE
+        if VALKEY_SHOW_OUTPUT:
             sys.stderr.write("Executing: {}".format(repr(args)))
         self.process = subprocess.Popen(
             args,
@@ -111,7 +111,7 @@ class DisposableRedis(object):
                 self.process.poll()
                 if self.process.returncode is not None:
                     raise RuntimeError(
-                        "Process has exited with code {}\n. Redis output: {}"
+                        "Process has exited with code {}\n. Valkey output: {}"
                         .format(self.process.returncode, self._get_output()))
 
                 if time.time() - begin > 300:
@@ -170,7 +170,7 @@ class DisposableRedis(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop()
         if exc_val or self.errored:
-            sys.stderr.write("Redis output: {}\n".format(self._get_output()))
+            sys.stderr.write("Valkey output: {}\n".format(self._get_output()))
 
     def _wait_for_child(self):
         # Wait until file is available
